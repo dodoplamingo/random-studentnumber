@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import Confetti from 'react-confetti';
-import JSConfetti from "js-confetti";
+import JSConfetti from 'js-confetti';
 
 const goldenGradient = 'linear-gradient(45deg, #FFD700, #FFA500)';
 
@@ -115,6 +115,21 @@ export const RandomStudentNumber = () => {
 
   useEffect(() => {
     if (finalNumber) {
+
+      const timers = [];
+
+      for (let k = 0; k < 4; k++) {
+        for (let i = 0; i < 10 + (k * 5); i++) {
+          timers.push(setTimeout(() => {
+            setNumber(prev => {
+              const newNumber = [...prev];
+              newNumber[k] = Math.floor(Math.random() * 10);
+              return newNumber;
+            });
+          }, i * 100));
+        }
+      }
+
       const revealNumber = (index) => {
         setNumber(prev => {
           const newNumber = [...prev];
@@ -124,13 +139,11 @@ export const RandomStudentNumber = () => {
         setHighlightIndex(index);
         setTimeout(() => setHighlightIndex(-1), 200); // 강조 효과를 500ms 유지
       };
-
-      const timers = [];
       for (let i = 0; i < 4; i++) {
         timers.push(setTimeout(() => {
           revealNumber(i);
           console.log(i)
-        }, i * 500)); // 500ms 간격으로 숫자 공개
+        }, 1000 + i * 500)); // 500ms 간격으로 숫자 공개
       }
 
       setTimeout(() => {
