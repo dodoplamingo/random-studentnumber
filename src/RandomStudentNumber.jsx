@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import Confetti from 'react-confetti';
+import JSConfetti from "js-confetti";
 
 const goldenGradient = 'linear-gradient(45deg, #FFD700, #FFA500)';
 
@@ -46,6 +47,15 @@ const SlotReel = styled.div`
   border-radius: 5px;
 `;
 
+const highlightAnimation = keyframes`
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+`;
+
 const SlotItem = styled.div`
   width: 80px;
   height: 120px;
@@ -61,6 +71,9 @@ const SlotItem = styled.div`
   text-shadow: 0 0 10px #FFD700;
   ${props => props.isBlinking && css`
     animation: ${blinkingLight} 0.5s linear infinite;
+  `}
+  ${({ isHighlighted }) => isHighlighted && css`
+    animation: ${highlightAnimation} 0.5s ease;
   `}
 `;
 
@@ -96,29 +109,46 @@ export const RandomStudentNumber = () => {
   const [finalNumber, setFinalNumber] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
+  const [highlightIndex, setHighlightIndex] = useState(-1);
+
+  const jsConfetti = new JSConfetti(); 
+  const moreConfetti = () => {
+    jsConfetti.addConfetti({
+      confettiColors: [
+        "#ff0a54", "#ff477e", "#ff7096", "#ff85a1", "#fbb1bd", "#f9bec7", "#ff0000", "#ff7f00", "#ffff00", "#00ff00", "#0000ff", "#4b0082", "#8b00ff"
+      ],
+      confettiRadius: 5,
+      confettiNumber: 500,
+    });
+  };
 
   useEffect(() => {
     if (finalNumber) {
-      const timer = setInterval(() => {
+      const revealNumber = (index) => {
         setNumber(prev => {
           const newNumber = [...prev];
-          for (let i = 0; i < 4; i++) {
-            if (newNumber[i] !== parseInt(finalNumber[i])) {
-              newNumber[i] = Math.floor(Math.random() * 10);
-            }
-          }
+          newNumber[index] = parseInt(finalNumber[index]);
           return newNumber;
         });
-      }, 100);
+        setHighlightIndex(index);
+        setTimeout(() => setHighlightIndex(-1), 200); // 강조 효과를 500ms 유지
+      };
+
+      const timers = [];
+      for (let i = 0; i < 4; i++) {
+        timers.push(setTimeout(() => {
+          revealNumber(i);
+          console.log(i)
+        }, i * 500)); // 500ms 간격으로 숫자 공개
+      }
 
       setTimeout(() => {
-        clearInterval(timer);
-        setNumber(finalNumber.split('').map(Number));
         setShowConfetti(true);
         setIsBlinking(true);
-      }, 1000);
+        moreConfetti();
+      }, 3000);
 
-      return () => clearInterval(timer);
+      return () => timers.forEach(timer => clearTimeout(timer));
     }
   }, [finalNumber]);
 
@@ -150,7 +180,7 @@ export const RandomStudentNumber = () => {
         <MachineTop>🌟 학번 추첨기 🌟</MachineTop>
         <SlotReel>
           {number.map((digit, index) => (
-            <SlotItem key={index} isBlinking={isBlinking}>{digit}</SlotItem>
+            <SlotItem key={index} isBlinking={isBlinking} isHighlighted={highlightIndex === index}>{digit}</SlotItem>
           ))}
         </SlotReel>
       </MachineContainer>
