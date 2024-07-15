@@ -112,15 +112,6 @@ export const RandomStudentNumber = () => {
   const [highlightIndex, setHighlightIndex] = useState(-1);
 
   const jsConfetti = new JSConfetti(); 
-  const moreConfetti = () => {
-    jsConfetti.addConfetti({
-      confettiColors: [
-        "#ff0a54", "#ff477e", "#ff7096", "#ff85a1", "#fbb1bd", "#f9bec7", "#ff0000", "#ff7f00", "#ffff00", "#00ff00", "#0000ff", "#4b0082", "#8b00ff"
-      ],
-      confettiRadius: 5,
-      confettiNumber: 500,
-    });
-  };
 
   useEffect(() => {
     if (finalNumber) {
@@ -145,7 +136,13 @@ export const RandomStudentNumber = () => {
       setTimeout(() => {
         setShowConfetti(true);
         setIsBlinking(true);
-        moreConfetti();
+        jsConfetti.addConfetti({
+          confettiColors: [
+            "#ff0a54", "#ff477e", "#ff7096", "#ff85a1", "#fbb1bd", "#f9bec7", "#ff0000", "#ff7f00", "#ffff00", "#00ff00", "#0000ff", "#4b0082", "#8b00ff"
+          ],
+          confettiRadius: 5,
+          confettiNumber: 500,
+        });
       }, 3000);
 
       return () => timers.forEach(timer => clearTimeout(timer));
