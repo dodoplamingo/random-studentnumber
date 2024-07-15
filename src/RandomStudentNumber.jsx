@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import Confetti from 'react-confetti';
 import JSConfetti from 'js-confetti';
@@ -110,8 +110,7 @@ export const RandomStudentNumber = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
-
-  const jsConfetti = new JSConfetti(); 
+  const jsConfetti = useRef(new JSConfetti());
 
   useEffect(() => {
     if (finalNumber) {
